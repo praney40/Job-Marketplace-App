@@ -1,0 +1,80 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
+
+import '../../domain/entities/job_entity.dart';
+import '../../../../core/common/widgets/app_avatar.dart';
+import '../../../../core/common/widgets/app_style.dart';
+import '../../../../core/common/widgets/custom_outline_btn.dart';
+import '../../../../core/common/widgets/height_spacer.dart';
+import '../../../../core/common/widgets/reusable_text.dart';
+import '../../../../core/common/widgets/salary_widget.dart';
+import '../../../../core/utils/app_colors.dart';
+import '../../../../core/utils/app_constants.dart';
+
+class JobSummaryCard extends StatelessWidget {
+  const JobSummaryCard({
+    super.key,
+    required this.job,
+  });
+
+  final JobEntity job;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: AppConstants.height * 0.25,
+      width: AppConstants.width,
+      color: AppColors.lightGrey,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          AppAvatar(
+            radius: 28,
+            imageUrl: job.imageUrl,
+            fallbackInitials: job.company,
+          ),
+          const HeightSpacer(size: 10),
+          ReusableText(
+            text: job.company,
+            style: appStyle(22, AppColors.dark, FontWeight.w600),
+          ),
+          ReusableText(
+            text: job.location,
+            style: appStyle(16, AppColors.darkGrey, FontWeight.normal),
+          ),
+          const HeightSpacer(size: 15),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 30.w),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                CustomOutlineBtn(
+                  width: AppConstants.width * 0.26,
+                  height: AppConstants.height * 0.04,
+                  text: job.period,
+                  color: AppColors.light,
+                  textAndBorderColor: AppColors.lightGreen,
+                ),
+                const SizedBox(width: 15),
+                Expanded(
+                  child: Align(
+                    alignment: Alignment.centerRight,
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: SalaryWidget(
+                        salary: SalaryModel(
+                          amount: job.salary,
+                          salaryType: SalaryType.perMonth,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}

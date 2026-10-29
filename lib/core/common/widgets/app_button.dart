@@ -1,0 +1,129 @@
+import 'package:flutter/material.dart';
+import '../../theme/app_radius.dart';
+import '../../theme/app_shadows.dart';
+import '../../utils/app_colors.dart';
+
+enum AppButtonVariant { primary, secondary, outline, text, danger, soft }
+
+class AppButton extends StatelessWidget {
+  final String label;
+  final VoidCallback? onTap;
+  final AppButtonVariant variant;
+  final bool isLoading;
+  final IconData? icon;
+  final double? width;
+  final double height;
+
+  const AppButton({
+    super.key,
+    required this.label,
+    this.onTap,
+    this.variant = AppButtonVariant.primary,
+    this.isLoading = false,
+    this.icon,
+    this.width,
+    this.height = 52,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final (bg, fg, border) = switch (variant) {
+      AppButtonVariant.primary => (
+          AppColors.primary,
+          Colors.white,
+          Colors.transparent
+        ),
+      AppButtonVariant.secondary => (
+          AppColors.accent,
+          Colors.white,
+          Colors.transparent
+        ),
+      AppButtonVariant.outline => (
+          Colors.white.withValues(alpha: 0.35),
+          AppColors.primary,
+          AppColors.cardBorder
+        ),
+      AppButtonVariant.text => (
+          Colors.transparent,
+          AppColors.primary,
+          Colors.transparent
+        ),
+      AppButtonVariant.danger => (
+          AppColors.error,
+          Colors.white,
+          Colors.transparent
+        ),
+      AppButtonVariant.soft => (
+          Colors.white.withValues(alpha: 0.8),
+          AppColors.textPrimary,
+          AppColors.cardBorder
+        ),
+    };
+
+    final content = isLoading
+        ? SizedBox(
+            width: 22,
+            height: 22,
+            child: CircularProgressIndicator(strokeWidth: 2.5, color: fg))
+        : Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (icon != null) ...[
+                Icon(icon, size: 18, color: fg),
+                const SizedBox(width: 6)
+              ],
+              Text(label,
+                  style: TextStyle(
+                      color: fg, fontSize: 15, fontWeight: FontWeight.w600)),
+            ],
+          );
+
+    final disabled = onTap == null && !isLoading;
+    final resolvedBg = disabled ? bg.withValues(alpha: 0.6) : bg;
+    final resolvedFg = disabled ? fg.withValues(alpha: 0.7) : fg;
+
+    final resolvedContent = isLoading
+        ? content
+        : Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (icon != null) ...[
+                Icon(icon, size: 18, color: resolvedFg),
+                const SizedBox(width: 6),
+              ],
+              Text(
+                label,
+                style: TextStyle(
+                  color: resolvedFg,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          );
+
+    return SizedBox(
+      width: width ?? double.infinity,
+      height: height,
+      child: Container(
+        decoration: BoxDecoration(
+          color: resolvedBg,
+          borderRadius: BorderRadius.circular(AppRadius.lg),
+          boxShadow: variant == AppButtonVariant.text ? null : AppShadows.sm,
+          border: border == Colors.transparent
+              ? null
+              : Border.all(color: border, width: 1.5),
+        ),
+        child: Material(
+          color: Colors.transparent,
+          borderRadius: BorderRadius.circular(AppRadius.lg),
+          child: InkWell(
+            onTap: isLoading ? null : onTap,
+            borderRadius: BorderRadius.circular(AppRadius.lg),
+            child: Center(child: resolvedContent),
+          ),
+        ),
+      ),
+    );
+  }
+}
